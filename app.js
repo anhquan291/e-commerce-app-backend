@@ -12,6 +12,7 @@ require('dotenv/config');
 const productRoute = require('./routes/product');
 const cartRoute = require('./routes/cart');
 const orderRoute = require('./routes/order');
+const favoriteRoute = require('./routes/favorite');
 
 //middleware & static files
 app.use(morgan('dev'));
@@ -27,6 +28,7 @@ app.get('/', (req, res) => {
 app.use(`/api/${process.env.VERSION}/products`, productRoute);
 app.use(`/api/${process.env.VERSION}/carts`, cartRoute);
 app.use(`/api/${process.env.VERSION}/orders`, orderRoute);
+app.use(`/api/${process.env.VERSION}/favoritelist`, favoriteRoute);
 
 //Connect to DB
 const dbURI = process.env.DB_CONNECTION;

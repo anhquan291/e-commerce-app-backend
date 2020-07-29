@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-// const item = require('./item');
 
 const cartSchema = new Schema({
   userId: {
@@ -17,7 +16,7 @@ const cartSchema = new Schema({
       },
       quantity: {
         type: String,
-        default: '1',
+        required: true,
       },
     },
   ],

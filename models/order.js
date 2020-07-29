@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const orderItem = require('./item');
 
 const orderSchema = new Schema(
   {
@@ -8,7 +7,20 @@ const orderSchema = new Schema(
       type: String,
       required: true,
     },
-    items: [orderItem],
+    items: [
+      {
+        _id: false,
+        item: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+          ref: 'Product',
+        },
+        quantity: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     totalAmount: {
       type: String,
       required: true,

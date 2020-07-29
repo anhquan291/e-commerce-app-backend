@@ -2,6 +2,7 @@ const Order = require('../models/order');
 
 const order_get = (req, res) => {
   Order.find()
+    .populate('items.item')
     .then((data) => {
       return res.status(200).send({
         status: 'OK',
