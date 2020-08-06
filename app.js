@@ -44,7 +44,7 @@ mongoose.connect(
     useCreateIndex: true,
   },
   () => {
-    app.listen(process.env.PORT);
+    app.listen(process.env.PORT, '192.168.0.27');
     console.log('Connected to DB');
   }
 );
