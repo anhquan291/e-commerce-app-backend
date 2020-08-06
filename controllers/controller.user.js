@@ -45,13 +45,23 @@ const user_register = (req, res) => {
 
 const user_login = (req, res) => {
   const { error } = loginValidation(req.body);
+<<<<<<< HEAD
+=======
+  const email = req.body.email.toLowerCase();
+  const password = req.body.password;
+>>>>>>> user
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
   //admin login
   if (
+<<<<<<< HEAD
     req.body.email === process.env.DEFAULT_ADMINNAME &&
     req.body.password === process.env.DEFAULT_PASSWORD
+=======
+    email === process.env.DEFAULT_ADMINNAME &&
+    password === process.env.DEFAULT_PASSWORD
+>>>>>>> user
   ) {
     jwt.sign(
       { name: 'admin' },
@@ -70,15 +80,16 @@ const user_login = (req, res) => {
     );
   } else {
     //user account
+<<<<<<< HEAD
     User.findOne({ email: req.body.email }).then((result) => {
       if (!result) {
-        return res.status(400).send('Email or password is wrong');
+        return res.status(400).send({ err: 'Email or password is wrong' });
       }
       bcrypt
         .compare(req.body.password, result.password)
         .then((passMatching) => {
           if (!passMatching) {
-            return res.status(400).send('Password is wrong');
+            return res.status(400).send({ err: 'Email or password is wrong' });
           }
           jwt.sign(
             { userId: result._id },
@@ -97,6 +108,33 @@ const user_login = (req, res) => {
             }
           );
         });
+=======
+    User.findOne({ email }).then((result) => {
+      if (!result) {
+        return res.status(400).send({ err: 'Email or password is wrong' });
+      }
+      bcrypt.compare(password, result.password).then((passMatching) => {
+        if (!passMatching) {
+          return res.status(400).send({ err: 'Email or password is wrong' });
+        }
+        jwt.sign(
+          { userId: result._id },
+          process.env.SECRET_TOKEN,
+          { expiresIn: 3600 },
+          (err, token) => {
+            if (err) {
+              return res.status(400).err;
+            }
+            res.header('auth-token', token).send({
+              userid: result._id,
+              name: result.name,
+              token: token,
+              expiresIn: 3600,
+            });
+          }
+        );
+      });
+>>>>>>> user
     });
   }
 };
@@ -104,13 +142,17 @@ const user_login = (req, res) => {
 const user_resetpw = async (req, res) => {
   const { email } = req.body;
   if (!email) {
-    return res.status(400).send('Email is wrong');
+    return res.status(400).send({ err: 'Email is wrong' });
   }
   let user;
   try {
     user = await User.findOne({ email });
   } catch (err) {
-    res.status(404).json('No user with that email');
+<<<<<<< HEAD
+    res.status(404).send({ err: 'Email or password is wrong' });
+=======
+    res.status(404).send({ err: 'Email is not exist' });
+>>>>>>> user
   }
   const token = usePasswordHashToMakeToken(user);
   const url = getPasswordResetURL(user, token);
@@ -118,7 +160,7 @@ const user_resetpw = async (req, res) => {
   const sendEmail = () => {
     transporter.sendMail(emailTemplate, (err, info) => {
       if (err) {
-        res.status(500).json('Error sending email');
+        res.status(500).send({ err: 'Error sending email' });
       }
 
       console.log(`** Email sent **`, info);
@@ -126,7 +168,7 @@ const user_resetpw = async (req, res) => {
   };
 
   sendEmail();
-  res.send('Reset Email is sent');
+  res.send({ noti: 'Email or password is wrong' });
 };
 const user_receivepw = (req, res) => {
   const { userId, token } = req.params;
@@ -142,13 +184,13 @@ const user_receivepw = (req, res) => {
         const salt = bcrypt.genSaltSync(10);
         const hashedPassword = bcrypt.hashSync(password, salt);
         User.findOneAndUpdate({ _id: userId }, { password: hashedPassword })
-          .then(() => res.status(202).json('Password changed accepted'))
-          .catch((err) => res.status(500).json(err));
+          .then(() => res.status(202).send('Password changed accepted'))
+          .catch((err) => res.status(500).send(err));
       }
     })
     // highlight-end
     .catch(() => {
-      res.status(404).json('Invalid user');
+      res.status(404).send({ err: 'Invalid user' });
     });
 };
 
