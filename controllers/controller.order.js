@@ -1,8 +1,15 @@
 const Order = require('../models/order');
+const User = require('../models/user');
+const pushNotification = require('../middlewares/pushNotification');
+const {
+  transporter,
+  sendUserOrderTemplate,
+} = require('../middlewares/emailTemplate');
 
 const order_get = (req, res) => {
   Order.find()
     .populate('items.item')
+    .populate('userId')
     .then((data) => {
       return res.status(200).send({
         status: 'OK',
@@ -26,10 +33,26 @@ const order_post = (req, res) => {
       content: null,
     });
   }
+  let content = {
+    title: 'Cập nhật đơn hàng',
+    body: `Đơn hàng của bạn đã được đặt thành công.`,
+  };
   const order = new Order(req.body);
   order
     .save()
     .then((data) => {
+      const sendEmail = () => {
+        transporter.sendMail(sendUserOrderTemplate(data), (err, info) => {
+          if (err) {
+            res.status(500).send({ err: 'Error sending email' });
+          }
+          console.log(`** Email sent **`, info);
+        });
+      };
+      sendEmail();
+      User.findById(data.userId).then((user) => {
+        pushNotification(user.pushTokens, content, '');
+      });
       return res.status(200).send({
         status: 'OK',
         message: 'Added Order Successfully',
@@ -45,7 +68,8 @@ const order_post = (req, res) => {
     });
 };
 const order_update = (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
+  const updateStatus = req.body.status;
   if (!req.params.id) {
     return res.status(200).send({
       status: 'ERR_REQUEST',
@@ -53,8 +77,15 @@ const order_update = (req, res) => {
       content: null,
     });
   }
-  Order.findByIdAndUpdate(id, req.body.status)
+  let content = {
+    title: 'Cập nhật đơn hàng',
+    body: `Đơn hàng ${id.substr(id.length - 10)} đã được ${updateStatus}.`,
+  };
+  Order.findByIdAndUpdate(id, { status: updateStatus })
     .then((data) => {
+      User.findById(data.userId).then((user) => {
+        pushNotification(user.pushTokens, content, '');
+      });
       return res.status(200).send({
         status: 'OK',
         message: 'Updated Order Successfully',

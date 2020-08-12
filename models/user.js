@@ -14,6 +14,10 @@ const registerSchema = new Schema({
     type: String,
     required: true,
   },
+  pushTokens: {
+    type: Array,
+    required: true,
+  },
 });
 
 const Register = mongoose.model('user', registerSchema);

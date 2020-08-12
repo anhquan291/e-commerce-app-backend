@@ -4,7 +4,7 @@ const usePasswordHashToMakeToken = (user) => {
   const { password, _id, createdAt } = user;
   const secret = password + '-' + createdAt;
   const token = jwt.sign({ _id }, secret, {
-    expiresIn: 900, // 15 mins
+    expiresIn: 15 * 60 * 1000, // 15 mins
   });
   // highlight-end
   return token;

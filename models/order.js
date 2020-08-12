@@ -4,8 +4,9 @@ const Schema = mongoose.Schema;
 const orderSchema = new Schema(
   {
     userId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref: 'user',
     },
     items: [
       {
@@ -13,7 +14,7 @@ const orderSchema = new Schema(
         item: {
           type: mongoose.Schema.Types.ObjectId,
           required: true,
-          ref: 'Product',
+          ref: 'product',
         },
         quantity: {
           type: String,
@@ -22,11 +23,15 @@ const orderSchema = new Schema(
       },
     ],
     totalAmount: {
-      type: String,
+      type: Number,
       required: true,
     },
     address: {
       type: String,
+      required: true,
+    },
+    phone: {
+      type: Number,
       required: true,
     },
     status: {

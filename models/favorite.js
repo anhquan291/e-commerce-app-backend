@@ -11,7 +11,7 @@ const favoriteListSchema = new Schema(
         _id: false,
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'Product',
+        ref: 'product',
       },
     ],
   },

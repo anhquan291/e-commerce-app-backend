@@ -15,23 +15,7 @@ const cartRoute = require('./routes/cart');
 const orderRoute = require('./routes/order');
 const favoriteRoute = require('./routes/favorite');
 const authRoute = require('./routes/auth');
-
-//middleware & static files
-app.use(morgan('dev'));
-app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use(cors());
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ extended: false, limit: '10mb' }));
-
-//routes
-app.get('/', (req, res) => {
-  res.send('Home page');
-});
-app.use(`/api/${process.env.VERSION}/products`, productRoute);
-app.use(`/api/${process.env.VERSION}/carts`, cartRoute);
-app.use(`/api/${process.env.VERSION}/orders`, orderRoute);
-app.use(`/api/${process.env.VERSION}/favoritelist`, favoriteRoute);
-app.use(`/api/${process.env.VERSION}/user`, authRoute);
+const notification = require('./middlewares/pushNotification');
 
 //Connect to DB
 const dbURI = process.env.DB_CONNECTION;
@@ -48,3 +32,21 @@ mongoose.connect(
     console.log('Connected to DB');
   }
 );
+
+//middleware & static files
+app.use(morgan('dev'));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use(cors());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: false, limit: '10mb' }));
+
+//routes
+app.get('/', (req, res) => {
+  res.send('Home page');
+});
+app.use(`/api/${process.env.VERSION}/product`, productRoute);
+app.use(`/api/${process.env.VERSION}/cart`, cartRoute);
+app.use(`/api/${process.env.VERSION}/order`, orderRoute);
+app.use(`/api/${process.env.VERSION}/favoritelist`, favoriteRoute);
+app.use(`/api/${process.env.VERSION}/user`, authRoute);
+app.use(`/api/notification`, notification);
