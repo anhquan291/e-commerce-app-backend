@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const verifyToken = require('../middlewares/verifytoken');
 
 const favoriteController = require('../controllers/controller.favorite');
 
-router.get('/', favoriteController.favorite_get);
+router.get('/', verifyToken, favoriteController.favorite_get);
 
-router.post('/post', favoriteController.favorite_post);
+router.post('/post', verifyToken, favoriteController.favorite_post);
 
-router.delete('/:id', favoriteController.favorite_deleteItem);
+router.patch('/:userId', verifyToken, favoriteController.favorite_deleteItem);
 
 module.exports = router;

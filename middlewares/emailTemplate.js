@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const getPasswordResetURL = (user, token) =>
-  `exp://192.168.0.27:19000/--/ResetPw?userid=${user._id}&token=${token}`;
+  `http://192.168.0.27:8080/?userid=${user._id}&token=${token}`;
 
 const resetPasswordTemplate = (user, url) => {
   const from = process.env.EMAIL_LOGIN;
@@ -20,7 +20,7 @@ const resetPasswordTemplate = (user, url) => {
   <p>Dear, ${user.name || user.email},</p>
   <p>Did you forget your password ?</p>
   <p> You can use the following link to reset your password:</p>
-  <a href='${url}'>https://192.168.0.27:19000/--/ResetPw</a>
+  <a href='${url}'>Click to Reset Your Password</a>
   <p>This link will expire in 15 minutes and can be used only once.</p>
   <p>If you don't want to change your password, please ignore and delete this message! </p>
   <p>Thank you,</p>

@@ -27,8 +27,6 @@ const favorite_post = (req, res) => {
       content: null,
     });
   }
-  console.log(req.body.items[0].item);
-
   Favorite.findOne({ userId: req.body.userId }, (err, result) => {
     if (result) {
       result.items.push(req.body.items[0].item);
@@ -74,19 +72,20 @@ const favorite_post = (req, res) => {
 };
 
 const favorite_deleteItem = (req, res) => {
-  const id = req.params.id;
+  const { userId } = req.params;
   const { item } = req.body;
-  if (!req.body || !req.params.id) {
+  if (!req.body || !req.params.userId) {
     return res.status(200).send({
       status: 'ERR_REQUEST',
       message: 'Please check your ID request',
       content: null,
     });
   }
-  Favorite.findById(id, (err, result) => {
+  Favorite.findOne({ userId: userId }, (err, result) => {
     const favoriteIndex = result.items.findIndex((product) => {
       return product.toString() === item;
     });
+    console.log(favoriteIndex);
     result.items.splice(favoriteIndex, 1);
     result.save();
   })

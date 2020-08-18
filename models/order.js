@@ -22,6 +22,10 @@ const orderSchema = new Schema(
         },
       },
     ],
+    name: {
+      type: Number,
+      required: true,
+    },
     totalAmount: {
       type: Number,
       required: true,

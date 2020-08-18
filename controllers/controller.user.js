@@ -12,6 +12,7 @@ const {
   registerUserTemplate,
 } = require('../middlewares/emailTemplate');
 const usePasswordHashToMakeToken = require('../middlewares/createUserToken');
+const pushNotification = require('../middlewares/pushNotification');
 
 const user_register = (req, res) => {
   //validation
@@ -166,7 +167,10 @@ const user_resetpw = async (req, res) => {
 const user_receivepw = (req, res) => {
   const { userId, token } = req.params;
   const { password } = req.body;
-
+  let content = {
+    title: 'Bảo mật',
+    body: `Mật khẩu của bạn thay đổi thành công.`,
+  };
   // highlight-start
   User.findOne({ _id: userId })
     .then((user) => {
@@ -177,7 +181,11 @@ const user_receivepw = (req, res) => {
         const salt = bcrypt.genSaltSync(10);
         const hashedPassword = bcrypt.hashSync(password, salt);
         User.findOneAndUpdate({ _id: userId }, { password: hashedPassword })
-          .then(() => res.status(202).send('Password changed accepted'))
+          .then(
+            (result) => pushNotification(result.pushTokens, content, ''),
+
+            res.status(202).send('Password is changed')
+          )
           .catch((err) => res.status(500).send(err));
       }
     })

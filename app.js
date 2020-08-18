@@ -5,7 +5,9 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
-
+const os = require('os');
+const networkInterfaces = os.networkInterfaces();
+const ip = networkInterfaces.Ethernet[1].address;
 //config
 require('dotenv/config');
 
@@ -28,7 +30,7 @@ mongoose.connect(
     useCreateIndex: true,
   },
   () => {
-    app.listen(process.env.PORT, '192.168.0.27');
+    app.listen(process.env.PORT, ip);
     console.log('Connected to DB');
   }
 );
@@ -42,7 +44,13 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '10mb' }));
 
 //routes
 app.get('/', (req, res) => {
-  res.send('Home page');
+  const id = req.query.userid;
+  const token = req.query.token;
+  console.log(id, token);
+  res.writeHead(301, {
+    Location: `exp://${ip}:19000/--/ResetPw?userid=${id}&token=${token}`,
+  });
+  res.end();
 });
 app.use(`/api/${process.env.VERSION}/product`, productRoute);
 app.use(`/api/${process.env.VERSION}/cart`, cartRoute);
