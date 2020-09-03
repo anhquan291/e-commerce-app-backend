@@ -122,7 +122,7 @@ const cart_update = (req, res) => {
     });
 };
 const cart_deleteCartItem = (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   const { item } = req.body;
   if (!req.body || !req.params.id) {
     return res.status(200).send({

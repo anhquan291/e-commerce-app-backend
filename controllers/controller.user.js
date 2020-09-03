@@ -25,34 +25,36 @@ const user_register = (req, res) => {
     if (result) {
       return res.status(400).send('The email already exists');
     }
-  });
-
-  //hash password
-  const salt = bcrypt.genSaltSync(10);
-  const hashedPassword = bcrypt.hashSync(req.body.password, salt);
-  const user = new User({
-    name: req.body.name,
-    email: req.body.email.toLowerCase(),
-    password: hashedPassword,
-    pushTokens: req.body.pushTokens,
-  });
-  user
-    .save()
-    .then((result) => {
-      const sendEmail = () => {
-        transporter.sendMail(registerUserTemplate(result), (err, info) => {
-          if (err) {
-            res.status(500).send({ err: 'Error sending email' });
-          }
-          console.log(`** Email sent **`, info);
-        });
-      };
-      sendEmail();
-      res.send(result);
-    })
-    .catch((err) => {
-      res.status(400).send(err.message);
+    //hash password
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+    const user = new User({
+      name: req.body.name,
+      email: req.body.email.toLowerCase(),
+      password: hashedPassword,
+      pushTokens: req.body.pushTokens,
+      phone: '',
+      address: '',
+      profilePicture: '',
     });
+    user
+      .save()
+      .then((result) => {
+        const sendEmail = () => {
+          transporter.sendMail(registerUserTemplate(result), (err, info) => {
+            if (err) {
+              res.status(500).send({ err: 'Error sending email' });
+            }
+            console.log(`** Email sent **`, info);
+          });
+        };
+        sendEmail();
+        res.send(result);
+      })
+      .catch((err) => {
+        res.status(400).send(err.message);
+      });
+  });
 };
 
 const user_login = (req, res) => {
@@ -123,9 +125,13 @@ const user_login = (req, res) => {
             if (err) {
               return res.status(400).err;
             }
-            res.header('auth-token', token).send({
+            return res.status(200).send({
               userid: result._id,
               name: result.name,
+              email: result.email,
+              phone: result.phone,
+              address: result.address,
+              profilePicture: result.profilePicture,
               token: token,
               loginAt: Date.now(),
               expireTime: Date.now() + 60 * 60 * 1000,
@@ -134,6 +140,42 @@ const user_login = (req, res) => {
         );
       });
     });
+  }
+};
+
+const user_edit = (req, res) => {
+  const { id } = req.params;
+
+  User.findOneAndUpdate({ _id: id }, req.body)
+    .then((result) => {
+      res.status(200).send(result);
+    })
+    .catch((err) => {
+      res.status(400).send(err);
+    });
+};
+
+const user_photoUpload = (req, res) => {
+  const host = process.env.HOST_NAME;
+  const { id } = req.params;
+
+  if (!req.body && !req.file) {
+    return res.status(200).send({
+      status: 'ERR_REQUEST',
+      message: 'Please check your request!',
+      content: null,
+    });
+  } else {
+    const imageUrl =
+      host + '/public/api/static/images/userprofile/' + req.file.filename;
+    console.log(id, req.file);
+    User.findOneAndUpdate({ _id: id }, { profilePicture: imageUrl })
+      .then((result) => {
+        res.status(200).send(result);
+      })
+      .catch((err) => {
+        res.status(400).send(err);
+      });
   }
 };
 
@@ -195,4 +237,11 @@ const user_receivepw = (req, res) => {
     });
 };
 
-module.exports = { user_register, user_login, user_resetpw, user_receivepw };
+module.exports = {
+  user_register,
+  user_login,
+  user_resetpw,
+  user_receivepw,
+  user_edit,
+  user_photoUpload,
+};

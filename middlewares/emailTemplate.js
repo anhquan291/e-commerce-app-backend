@@ -1,7 +1,7 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
+  host: "smtp.gmail.com",
   secure: true,
   auth: {
     user: process.env.EMAIL_LOGIN,
@@ -15,7 +15,7 @@ const getPasswordResetURL = (user, token) =>
 const resetPasswordTemplate = (user, url) => {
   const from = process.env.EMAIL_LOGIN;
   const to = user.email;
-  const subject = '🍀 CatTuong Password Reset 🍀';
+  const subject = "🍀 CatTuong Password Reset 🍀";
   const html = ` 
   <p>Dear, ${user.name || user.email},</p>
   <p>Did you forget your password ?</p>
@@ -34,7 +34,7 @@ const resetPasswordTemplate = (user, url) => {
 const registerUserTemplate = (user) => {
   const from = process.env.EMAIL_LOGIN;
   const to = user.email;
-  const subject = '🍀 Đăng Ký Tài Khoản Thành Công 🍀';
+  const subject = "🍀 Đăng Ký Tài Khoản Thành Công 🍀";
   const html = `
   <p>Dear, ${user.name} </p>
   <p>Thank you for registering for shopping at our store </p>
@@ -48,10 +48,10 @@ const registerUserTemplate = (user) => {
   return { from, to, subject, html };
 };
 
-const sendUserOrderTemplate = (data) => {
+const sendUserOrderTemplate = (data, user) => {
   const from = process.env.EMAIL_LOGIN;
-  const to = 'anhquan291@gmail.com';
-  const subject = '🍀 Đặt hàng thành công, thông tin đơn hàng của bạn 🍀';
+  const to = user.email;
+  const subject = "🍀 Đặt hàng thành công, thông tin đơn hàng của bạn 🍀";
   const html = `
   
   <p>Dear, Customer </p>

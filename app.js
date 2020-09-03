@@ -1,23 +1,24 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const mongoose = require('mongoose');
-const morgan = require('morgan');
-const bodyParser = require('body-parser');
-const path = require('path');
-const cors = require('cors');
-const os = require('os');
+const mongoose = require("mongoose");
+const morgan = require("morgan");
+const bodyParser = require("body-parser");
+const path = require("path");
+const cors = require("cors");
+const os = require("os");
+
 const networkInterfaces = os.networkInterfaces();
 const ip = networkInterfaces.Ethernet[1].address;
 //config
-require('dotenv/config');
+require("dotenv/config");
 
 //import routes
-const productRoute = require('./routes/product');
-const cartRoute = require('./routes/cart');
-const orderRoute = require('./routes/order');
-const favoriteRoute = require('./routes/favorite');
-const authRoute = require('./routes/auth');
-const notification = require('./middlewares/pushNotification');
+const productRoute = require("./routes/product");
+const cartRoute = require("./routes/cart");
+const orderRoute = require("./routes/order");
+const favoriteRoute = require("./routes/favorite");
+const authRoute = require("./routes/auth");
+const notification = require("./middlewares/pushNotification");
 
 //Connect to DB
 const dbURI = process.env.DB_CONNECTION;
@@ -31,19 +32,19 @@ mongoose.connect(
   },
   () => {
     app.listen(process.env.PORT, ip);
-    console.log('Connected to DB');
+    console.log("Connected to DB");
   }
 );
 
 //middleware & static files
-app.use(morgan('dev'));
-app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use(morgan("dev"));
+app.use("/public", express.static(path.join(__dirname, "public")));
 app.use(cors());
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ extended: false, limit: '10mb' }));
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ extended: false, limit: "10mb" }));
 
 //routes
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   const id = req.query.userid;
   const token = req.query.token;
   console.log(id, token);

@@ -1,6 +1,5 @@
 const sharp = require('sharp');
 const os = require('os');
-require('dotenv/config');
 const Product = require('../models/product');
 
 const product_get = (req, res) => {
