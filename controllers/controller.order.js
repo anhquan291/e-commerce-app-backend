@@ -29,7 +29,7 @@ const order_get = (req, res) => {
       });
     });
 };
-const order_post = (req, res) => {
+const order_post = async (req, res) => {
   const { items, totalAmount } = req.body.orderInfo;
   const { token } = req.body;
   const orders = items.map((item) => {
@@ -49,86 +49,45 @@ const order_post = (req, res) => {
 
   const order = new Order(req.body.orderInfo);
 
-  if (Object.keys(token).length != 0) {
-    stripe.charges
-      .create({
+  if (Object.keys(token).length !== 0) {
+    try {
+      stripe.charges.create({
         amount: totalAmount,
         currency: "usd",
         description: `Order Items: ${orders}`,
         source: token.id,
-      })
-      .then((result) => {
-        console.log("charged customer credit card!");
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(400).send({
-          status: "ERR_SERVER",
-          message: err.message,
-          content: null,
-        });
       });
+    } catch (err) {
+      res.send(err);
+    }
+  }
+  try {
+    const resOrder = await order.save();
 
-    order
-      .save()
-      .then((data) => {
-        User.findById(data.userId).then((user) => {
-          pushNotification(user.pushTokens, content, "");
-          transporter.sendMail(
-            sendUserOrderTemplate(data, user),
-            (err, info) => {
-              if (err) {
-                console.log(err);
-              }
-              console.log(`** Email sent **`, info);
-            }
-          );
-        });
-        return res.status(200).send({
-          status: "OK",
-          message: "Added Order Successfully",
-          content: data,
-        });
-      })
-      .catch((err) => {
-        return res.status(400).send({
-          status: "ERR_SERVER",
-          message: err.message,
-          content: null,
-        });
-      });
-  } else {
-    order
-      .save()
-      .then((data) => {
-        User.findById(data.userId).then((user) => {
-          pushNotification(user.pushTokens, content, "");
-          transporter.sendMail(
-            sendUserOrderTemplate(data, user),
-            (err, info) => {
-              if (err) {
-                console.log(err);
-              }
-              console.log(`** Email sent **`, info);
-            }
-          );
-        });
-        return res.status(200).send({
-          status: "OK",
-          message: "Added Order Successfully",
-          content: data,
-        });
-      })
-      .catch((err) => {
-        return res.status(400).send({
-          status: "ERR_SERVER",
-          message: err.message,
-          content: null,
-        });
-      });
+    const user = await User.findById(resOrder.userId);
+
+    pushNotification(user.pushTokens, content, "");
+    transporter.sendMail(sendUserOrderTemplate(resOrder, user), (err, info) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log(`** Email sent **`, info);
+    });
+
+    return res.status(200).send({
+      status: "OK",
+      message: "Added Order Successfully",
+      content: resOrder,
+    });
+  } catch (err) {
+    return res.status(400).send({
+      status: "ERR_SERVER",
+      message: err.message,
+      content: null,
+    });
   }
 };
-const order_update = (req, res) => {
+const order_update = async (req, res) => {
   const { id } = req.params;
   const updateStatus = req.body.status;
   if (!req.params.id) {
@@ -142,24 +101,24 @@ const order_update = (req, res) => {
     title: "Cập nhật đơn hàng",
     body: `Đơn hàng ${id.substr(id.length - 10)} đã được ${updateStatus}.`,
   };
-  Order.findByIdAndUpdate(id, { status: updateStatus })
-    .then((data) => {
-      User.findById(data.userId).then((user) => {
-        pushNotification(user.pushTokens, content, "");
-      });
-      return res.status(200).send({
-        status: "OK",
-        message: "Updated Order Successfully",
-        content: data,
-      });
-    })
-    .catch((err) => {
-      return res.status(400).send({
-        status: "ERR_SERVER",
-        message: err.message,
-        content: null,
-      });
+  try {
+    const resOrder = await Order.findByIdAndUpdate(id, {
+      status: updateStatus,
     });
+    const user = User.findById(resOrder.userId);
+    pushNotification(user.pushTokens, content, "");
+    return res.status(200).send({
+      status: "OK",
+      message: "Updated Order Successfully",
+      content: resOrder,
+    });
+  } catch (err) {
+    return res.status(400).send({
+      status: "ERR_SERVER",
+      message: err.message,
+      content: null,
+    });
+  }
 };
 
 module.exports = {

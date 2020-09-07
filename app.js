@@ -44,7 +44,7 @@ app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: false, limit: "10mb" }));
 
 //routes
-app.get("/", (req, res) => {
+app.get("/expo", (req, res) => {
   const id = req.query.userid;
   const token = req.query.token;
   console.log(id, token);

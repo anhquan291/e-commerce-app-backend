@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const getPasswordResetURL = (user, token) =>
-  `http://192.168.0.27:8080/?userid=${user._id}&token=${token}`;
+  `http://192.168.0.27:8080/expo?userid=${user._id}&token=${token}`;
 
 const resetPasswordTemplate = (user, url) => {
   const from = process.env.EMAIL_LOGIN;
