@@ -7,15 +7,15 @@
 
 ### <img src="https://media.giphy.com/media/VgCDAzcKvsR6OM0uWg/giphy.gif" width="50">Contain all necessary features 
 
-##Authentication using JWT
+## Authentication using JWT 
   - Signup
   - Login 
   - Reset User Password
   
-##MongoDB Database
+## MongoDB Database
   - Mongoose
   
-##Features
+## Features
   - Add Cart
   - Wishlist
   - Order Product
