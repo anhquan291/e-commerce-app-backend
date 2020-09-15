@@ -29,6 +29,7 @@ Happy coding 😍😍😍
 - Create User, Reset Password.
 - Add/Update/Delete Products, Users, Carts, Whislist, Order.
 - Fetch Products, Carts, Orders...
+- Products url query (http://localhost:3001/api/v1/products?limit=2&page=1)
 - Send email to user.
 - Push notification to user's devices.
 - Payment.
