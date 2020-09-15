@@ -7,21 +7,49 @@
 
 ### <img src="https://media.giphy.com/media/VgCDAzcKvsR6OM0uWg/giphy.gif" width="50">Contain all necessary features 
 
-## Authentication using JWT 
-  - Signup
-  - Login 
-  - Reset User Password
-  
-## MongoDB Database
-  - Mongoose
-  
+
+## Get Started
+
+
+``` bash
+# install dependencies
+npm install
+```
+``` bash
+# run project
+nodemon app
+```
+``` bash
+# Configuration 
+Change the constants in .env file (your database, host, port...) 
+Happy coding 😍😍😍
+```
+
 ## Features
-  - Add Cart
-  - Wishlist
-  - Order Product
-  - Pay with Credit Card by Stripe Server
-  - Push Notification
-  - Send Email to User.
+- Create User, Reset Password.
+- Add/Update/Delete Products, Users, Carts, Whislist, Order.
+- Fetch Products, Carts, Orders...
+- Send email to user.
+- Push notification to user's devices.
+- Payment.
+- Upload and resize photo.
+
+
+## Technical details
+  - Nodejs, Express.
+  - Mongodb, Mongoose.
+  - Nodemailer.
+  - Multer, Sharp.
+  - Hapi/joi validation.
+  - Expo notification.
+  - Stripe Payment.
+  
+  
+## Contributing
+
+If you'd like to contribute, please fork the repository and make changes as
+you'd like. Pull requests are warmly welcome. Thanks alot
+  
 
 
 
