@@ -43,7 +43,16 @@ const cart_post = (req, res) => {
       });
       if (cartIndex < 0) {
         result.items.push(req.body.items[0]);
-        result.save();
+        result
+          .save()
+          .then((data) => {
+            return res.status(200).send({
+              status: "OK",
+              message: "Added Cart Successfully",
+              content: data,
+            });
+          })
+          .catch((err) => console.log(err));
       } else {
         result.items[cartIndex].quantity = (
           Number(result.items[cartIndex].quantity) + 1

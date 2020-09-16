@@ -1,9 +1,7 @@
 const Order = require("../models/order");
 const User = require("../models/user");
 const pushNotification = require("../middlewares/pushNotification");
-const stripe = require("stripe")(
-  "sk_test_51HLo2AD28q5Rme0eyvB61M8IIVyUupPuuYc172JyEJv0BloZ6wdkxb0aAoXfRlyb2CpU3loLoJaHOCEKSnmNdhzn00hHUzdJ6f"
-);
+const stripe = require("stripe")(process.env.STIPE_SECRET_TOKEN);
 const { v4: uuidv4 } = require("uuid");
 const {
   transporter,

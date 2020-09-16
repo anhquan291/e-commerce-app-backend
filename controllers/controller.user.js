@@ -157,7 +157,6 @@ const user_photoUpload = (req, res) => {
   } else {
     const imageUrl =
       host + "/public/api/static/images/userprofile/" + req.file.filename;
-    console.log(id, req.file);
     User.findOneAndUpdate({ _id: id }, { profilePicture: imageUrl })
       .then((result) => {
         return res.status(200).send(result);
@@ -199,8 +198,8 @@ const user_receivepw = async (req, res) => {
   const { userId, token } = req.params;
   const { password } = req.body;
   let content = {
-    title: "Bảo mật",
-    body: `Mật khẩu của bạn thay đổi thành công.`,
+    title: "Security",
+    body: `Reset Password Successfully.`,
   };
   // highlight-start
   const user = await User.findOne({ _id: userId });
@@ -221,7 +220,7 @@ const user_receivepw = async (req, res) => {
       pushNotification(updateUser.pushTokens, content, ""),
         res.status(202).send("Password is changed");
     } catch (err) {
-      res.status(500).send(err);
+      res.status(500).send({ err });
     }
   } else {
     res.status(500).send({ err: "Token is invalid" });
