@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+const multer = require("multer");
+const upload = multer();
 const bodyParser = require("body-parser");
 const path = require("path");
 const cors = require("cors");
@@ -40,6 +42,7 @@ mongoose.connect(
 app.use(morgan("dev"));
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use(cors());
+app.use(express.json());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: false, limit: "10mb" }));
 

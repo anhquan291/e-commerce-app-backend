@@ -147,8 +147,9 @@ const user_edit = (req, res) => {
 const user_photoUpload = (req, res) => {
   const host = process.env.HOST_NAME;
   const { id } = req.params;
+  console.log(req.body);
 
-  if (!req.body && !req.file) {
+  if (!req.body || !req.file) {
     return res.status(200).send({
       status: "ERR_REQUEST",
       message: "Please check your request!",
@@ -156,10 +157,10 @@ const user_photoUpload = (req, res) => {
     });
   } else {
     const imageUrl =
-      host + "/public/api/static/images/userprofile/" + req.file.filename;
+      host + "/public/api/static/images/userprofile/" + id + ".jpg";
     User.findOneAndUpdate({ _id: id }, { profilePicture: imageUrl })
       .then((result) => {
-        return res.status(200).send(result);
+        return res.status(200).send("Uploaded profile picture");
       })
       .catch((err) => {
         res.status(400).send(err);
