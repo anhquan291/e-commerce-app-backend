@@ -1,4 +1,3 @@
-const sharp = require("sharp");
 const Product = require("../models/product");
 
 const product_get = (req, res) => {
@@ -33,68 +32,94 @@ const product_get = (req, res) => {
 
 const product_post = (req, res) => {
   const host = process.env.HOST_NAME;
-  if (!req.body && !req.file) {
+  const filename = req.body.filename.replace(/ +/g, "");
+  if (!req.body || !req.file) {
     return res.status(200).send({
       status: "ERR_REQUEST",
       message: "Please check your request!",
       content: null,
     });
-  } else {
-    const imageUrl = host + "/public/api/static/images/" + req.file.filename;
-    const resizeUrl =
-      host + "/public/api/static/images/" + "256x144-" + req.file.filename;
-    const product = new Product({
-      filename: req.body.filename,
-      price: req.body.price,
-      color: req.body.color,
-      origin: req.body.origin,
-      standard: req.body.standard,
-      description: req.body.description,
-      url: imageUrl,
-      thumb: resizeUrl,
-      type: req.body.type,
-    });
-    return product
-      .save()
-      .then((data) => {
-        sharp(req.file.path)
-          .resize(256, 144)
-          .toFile(
-            "./public/api/static/images/" + "256x144-" + req.file.filename,
-            (err) => {
-              if (err) {
-                console.error("sharp>>>", err);
-              }
-              console.log("resize successfully");
-            }
-          );
-        return res.status(200).send({
-          status: "OK",
-          message: "Added Product Successfully",
-          content: data,
-        });
-      })
-      .catch((err) => {
-        return res.status(400).send({
-          status: "ERR_SERVER",
-          message: err.message,
-          content: null,
-        });
-      });
   }
+
+  const imageUrl =
+    host + "/public/api/static/images/productPictures/" + filename + ".jpg";
+  const resizeUrl =
+    host +
+    "/public/api/static/images/productPictures/" +
+    "256x144-" +
+    filename +
+    ".jpg";
+
+  const product = new Product({
+    filename: req.body.filename,
+    price: req.body.price,
+    color: req.body.color,
+    origin: req.body.origin,
+    standard: req.body.standard,
+    description: req.body.description,
+    url: imageUrl,
+    thumb: resizeUrl,
+    type: req.body.type,
+  });
+  return product
+    .save()
+    .then((data) => {
+      return res.status(200).send({
+        status: "OK",
+        message: "Added Product Successfully",
+        content: data,
+      });
+    })
+    .catch((err) => {
+      return res.status(400).send({
+        status: "ERR_SERVER",
+        message: err.message,
+        content: null,
+      });
+    });
 };
 
 // eslint-disable-next-line consistent-return
-const product_update = (req, res) => {
+const product_update = async (req, res) => {
   const id = req.params.id;
-  if (!req.params.id) {
+  const host = process.env.HOST_NAME;
+  let filename = "";
+  let imageUrl = "";
+  let resizeUrl = "";
+  if (!req.params.id || !req.body) {
     return res.status(200).send({
       status: "ERR_REQUEST",
       message: "Please check your ID request",
       content: null,
     });
   }
-  Product.findByIdAndUpdate(id, req.body)
+  if (req.file) {
+    filename = await req.body.filename.replace(/ +/g, "");
+    imageUrl =
+      host + "/public/api/static/images/productPictures/" + filename + ".jpg";
+    resizeUrl =
+      host +
+      "/public/api/static/images/productPictures/" +
+      "256x144-" +
+      filename +
+      ".jpg";
+  }
+
+  const product = req.file
+    ? {
+        filename: req.body.filename,
+        price: req.body.price,
+        color: req.body.color,
+        origin: req.body.origin,
+        standard: req.body.standard,
+        description: req.body.description,
+        url: imageUrl,
+        thumb: resizeUrl,
+        type: req.body.type,
+      }
+    : req.body;
+  console.log(product);
+  Product.findByIdAndUpdate(id, product)
     .then((data) => {
       return res.status(200).send({
         status: "OK",
