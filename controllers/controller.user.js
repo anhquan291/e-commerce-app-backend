@@ -43,14 +43,15 @@ const user_register = async (req, res) => {
       transporter.sendMail(registerUserTemplate(resUser), (err, info) => {
         if (err) {
           res.status(500).send({ err: "Error sending email" });
+        } else {
+          console.log(`** Email sent **`, info);
         }
-        console.log(`** Email sent **`, info);
       });
     };
     sendEmail();
     return res.status(200).json(resUser);
   } catch (err) {
-    res.status(400).send(err.message);
+    res.status(400).send(err);
   }
 };
 
