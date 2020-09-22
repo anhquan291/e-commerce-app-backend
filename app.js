@@ -2,8 +2,6 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const morgan = require("morgan");
-const multer = require("multer");
-const upload = multer();
 const bodyParser = require("body-parser");
 const path = require("path");
 const cors = require("cors");
@@ -34,9 +32,31 @@ mongoose.connect(
   },
   () => {
     app.listen(process.env.PORT, ip);
+    let dirPath = path.join(
+      __dirname,
+      "public/api/static/images/productPictures"
+    );
+    let dirPathUser = path.join(
+      __dirname,
+      "public/api/static/images/userprofile"
+    );
+    createDir(dirPath);
+    createDir(dirPathUser);
     console.log("Connected to DB");
   }
 );
+
+function createDir(dirPath) {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true }, (err) => {
+      if (err) {
+        console.error("createDir Error:", err);
+      } else {
+        console.log("Directory is made!");
+      }
+    });
+  }
+}
 
 //middleware & static files
 app.use(morgan("dev"));
