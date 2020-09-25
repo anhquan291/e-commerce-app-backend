@@ -49,7 +49,7 @@ const user_register = async (req, res) => {
       });
     };
     sendEmail();
-    return res.status(200).json(resUser);
+    res.status(200).json(resUser);
   } catch (err) {
     res.status(400).send(err);
   }

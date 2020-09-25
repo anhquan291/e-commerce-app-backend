@@ -61,18 +61,16 @@ const order_post = async (req, res) => {
   }
   try {
     const resOrder = await order.save();
-
     const user = await User.findById(resOrder.userId);
-
     pushNotification(user.pushTokens, content, "");
     transporter.sendMail(sendUserOrderTemplate(resOrder, user), (err, info) => {
       if (err) {
-        console.log(err);
+        res.status(500).send({ err: "Error sending email" });
+      } else {
+        console.log(`** Email sent **`, info);
       }
-      console.log(`** Email sent **`, info);
     });
-
-    return res.status(200).send({
+    res.status(200).send({
       status: "OK",
       message: "Added Order Successfully",
       content: resOrder,
