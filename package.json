@@ -16,7 +16,7 @@
     "dotenv": "^8.2.0",
     "expo-server-sdk": "^3.5.1",
     "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "mongoose": "^5.9.24",
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
